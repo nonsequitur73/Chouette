@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Chouette</title>
+<style>
+  :root{
+    --pine:#12291F;
+    --fairway:#2A6B4F;
+    --sand:#E4D9BE;
+    --paper:#F6F2E7;
+    --flag:#B8412C;
+    --ink:#12291F;
+    --ink-soft:#5B6E63;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    padding-bottom:40px;
+  }
+  .wrap{max-width:520px;margin:0 auto;padding:0 16px}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input{font-family:inherit;font-size:16px}
+
+  header{background:var(--pine);color:var(--sand);padding:18px 0 22px}
+  .brand{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px}
+  .brand h1{margin:0;font-size:19px;font-weight:600;letter-spacing:-0.01em}
+  .brand span{font-size:12px;color:#8FA89A}
+
+  .holebar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .arrow{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.09);
+    font-size:24px;line-height:1;display:flex;align-items:center;justify-content:center;color:var(--sand)}
+  .arrow:disabled{opacity:.25}
+  .arrow:active{background:rgba(255,255,255,.18)}
+  .holeface{text-align:center;flex:1}
+  .holenum{font-size:44px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+  .holesub{font-size:12px;color:#8FA89A;margin-top:2px}
+  .par{margin-top:10px;display:inline-flex;align-items:center;gap:2px;
+    background:rgba(255,255,255,.09);border-radius:999px;padding:3px}
+  .par button{width:32px;height:30px;border-radius:999px;color:var(--sand);font-size:17px}
+  .par b{font-size:13px;font-weight:500;padding:0 8px;font-variant-numeric:tabular-nums}
+
+  .rows{margin-top:-14px}
+  .row{background:#fff;border-radius:14px;padding:10px 10px 10px 16px;margin-bottom:10px;
+    display:flex;align-items:center;gap:10px;box-shadow:0 1px 0 rgba(18,41,31,.10)}
+  .who{flex:1;min-width:0}
+  .who .n{font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .who .n span.name{border-bottom:1px dotted #C3CCC6;padding-bottom:1px}
+  .rename{width:100%;font-size:16px;font-weight:500;padding:6px 8px;border:1px solid var(--fairway);
+    border-radius:8px;background:#fff;color:var(--ink)}
+  .rename:focus{outline:none}
+  .who .t{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+  .step{width:48px;height:48px;border-radius:12px;background:var(--sand);
+    font-size:22px;font-weight:500;display:flex;align-items:center;justify-content:center}
+  .step:active{background:#D3C5A2}
+  .num{width:44px;text-align:center;font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}
+  .num.empty{color:#C3CCC6;font-weight:400}
+  .tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;margin-left:6px;vertical-align:1px;
+    font-variant-numeric:tabular-nums}
+  .win{background:#D6E8DD;color:var(--fairway)}
+  .mid{background:#E9E4D5;color:#6B6244}
+  .zero{background:#EDEEEC;color:#9AA39E}
+  .wait{background:#EDEEEC;color:#9AA39E}
+
+  h2{font-size:13px;font-weight:600;color:var(--ink-soft);margin:26px 0 10px}
+  .board{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 0 rgba(18,41,31,.10)}
+  .line{display:flex;align-items:center;gap:10px;padding:12px 14px;border-top:1px solid #EFEBDF}
+  .line:first-child{border-top:none}
+  .line.lead{background:#F4F8F5}
+  .pos{width:18px;font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+  .lname{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px}
+  .lst{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+  .lpt{font-size:17px;font-weight:600;min-width:52px;text-align:right;font-variant-numeric:tabular-nums}
+  .del{width:30px;height:30px;border-radius:50%;color:#B9C2BC;font-size:15px}
+
+  .addrow{display:flex;gap:8px;margin-top:12px}
+  .addrow input{flex:1;padding:12px 14px;border:1px solid #DDD6C4;border-radius:12px;background:#fff}
+  .addrow input:focus{outline:2px solid var(--fairway);outline-offset:-1px}
+  .addrow button{background:var(--fairway);color:#fff;padding:0 18px;border-radius:12px;font-weight:500}
+
+  .foot{display:flex;justify-content:space-between;align-items:center;margin-top:20px;font-size:13px;color:var(--ink-soft)}
+  .foot button{text-decoration:underline;color:var(--ink-soft)}
+  .rules{margin-top:14px;font-size:12.5px;color:var(--ink-soft);line-height:1.7}
+  .saved{font-size:12px;color:var(--fairway)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand"><h1>Chouette</h1><span id="saved" class="saved"></span></div>
+    <div class="holebar">
+      <button class="arrow" id="prev" aria-label="Trou précédent">‹</button>
+      <div class="holeface">
+        <div class="holenum" id="holenum">1</div>
+        <div class="holesub" id="holesub">trou 1 sur 18</div>
+        <div class="par">
+          <button id="parDown" aria-label="Baisser le par">−</button>
+          <b>par <span id="parVal">4</span></b>
+          <button id="parUp" aria-label="Monter le par">+</button>
+        </div>
+      </div>
+      <button class="arrow" id="next" aria-label="Trou suivant">›</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="rows" id="rows"></div>
+
+  <h2>Classement</h2>
+  <div class="board" id="board"></div>
+
+  <div class="addrow">
+    <input id="newName" type="text" placeholder="Ajouter un joueur" autocomplete="off">
+    <button id="add">Ajouter</button>
+  </div>
+
+  <div class="foot">
+    <span id="progress"></span>
+    <button id="reset">Nouvelle partie</button>
+  </div>
+
+  <div class="rules" id="rules"></div>
+</div>
+
+<script>
+(function(){
+  var KEY='chouette-golf-v2';
+  var state={players:['Joueur 1','Joueur 2','Joueur 3'],pars:null,scores:{},hole:0};
+  state.pars=[4,5,3,4,4,3,5,4,4,4,3,5,4,4,3,4,5,4];
+  state.players.forEach(function(p){state.scores[p]=new Array(18).fill(null);});
+
+  var saveTimer=null;
+  function flash(msg){var el=document.getElementById('saved');el.textContent=msg;
+    clearTimeout(flash.t);flash.t=setTimeout(function(){el.textContent='';},1600);}
+
+  function save(){
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(function(){
+      try{
+        localStorage.setItem(KEY,JSON.stringify(state));
+        flash('enregistré');
+      }catch(e){}
+    },400);
+  }
+
+  function load(){
+    try{
+      var raw=localStorage.getItem(KEY);
+      if(raw){
+        var d=JSON.parse(raw);
+        if(d&&d.players&&d.players.length){state=d;}
+      }
+    }catch(e){}
+    return Promise.resolve();
+  }
+
+  function holeComplete(i){
+    if(state.players.length<2)return false;
+    for(var k=0;k<state.players.length;k++){
+      if(state.scores[state.players[k]][i]===null)return false;
+    }
+    return true;
+  }
+
+  function holePoints(i){
+    var out={};
+    var n=state.players.length;
+    if(!holeComplete(i))return out;
+    var slots=[];
+    for(var k=0;k<n;k++)slots.push(2*(n-1-k));
+    var list=state.players.map(function(p){return{p:p,s:state.scores[p][i]};})
+      .sort(function(a,b){return a.s-b.s;});
+    var idx=0;
+    while(idx<n){
+      var j=idx;
+      while(j+1<n&&list[j+1].s===list[idx].s)j++;
+      var sum=0;
+      for(var q=idx;q<=j;q++)sum+=slots[q];
+      var share=sum/(j-idx+1);
+      for(var q2=idx;q2<=j;q2++)out[list[q2].p]=share;
+      idx=j+1;
+    }
+    return out;
+  }
+
+  function tot(p){
+    var t=0;
+    for(var i=0;i<18;i++){
+      var hp=holePoints(i);
+      if(hp[p]!==undefined)t+=hp[p];
+    }
+    return t;
+  }
+  function strokes(p){var t=0;for(var i=0;i<18;i++){var s=state.scores[p][i];if(s!==null)t+=s;}return t;}
+  function played(p){var c=0;for(var i=0;i<18;i++)if(state.scores[p][i]!==null)c++;return c;}
+  function fmt(v){return Number.isInteger(v)?String(v):v.toFixed(1);}
+
+  var rowsEl=document.getElementById('rows'),boardEl=document.getElementById('board');
+
+  function renamePlayer(oldName,newName){
+    newName=newName.trim();
+    if(!newName||newName===oldName)return;
+    if(state.players.indexOf(newName)>-1)return;
+    var i=state.players.indexOf(oldName);
+    if(i<0)return;
+    state.players[i]=newName;
+    state.scores[newName]=state.scores[oldName];
+    delete state.scores[oldName];
+  }
+
+  function startRename(p,container){
+    var input=document.createElement('input');
+    input.type='text';input.className='rename';input.value=p;
+    input.setAttribute('aria-label','Nom du joueur');
+    var done=false;
+    function commit(){
+      if(done)return;done=true;
+      renamePlayer(p,input.value);render();save();
+    }
+    input.onblur=commit;
+    input.onkeydown=function(e){
+      if(e.key==='Enter'){e.preventDefault();input.blur();}
+      if(e.key==='Escape'){done=true;render();}
+    };
+    container.innerHTML='';container.appendChild(input);
+    input.focus();input.select();
+  }
+
+  function render(){
+    var h=state.hole,n=state.players.length;
+    document.getElementById('holenum').textContent=h+1;
+    document.getElementById('holesub').textContent='trou '+(h+1)+' sur 18';
+    document.getElementById('parVal').textContent=state.pars[h];
+    document.getElementById('prev').disabled=(h===0);
+    document.getElementById('next').disabled=(h===17);
+
+    var hp=holePoints(h);
+
+    rowsEl.innerHTML='';
+    state.players.forEach(function(p){
+      var s=state.scores[p][h];
+      var row=document.createElement('div');row.className='row';
+
+      var who=document.createElement('div');who.className='who';
+      var nEl=document.createElement('div');nEl.className='n';
+      var label=document.createElement('span');label.className='name';label.textContent=p;
+      label.setAttribute('role','button');label.setAttribute('tabindex','0');
+      label.setAttribute('aria-label','Renommer '+p);
+      label.onclick=function(){startRename(p,nEl);};
+      label.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();startRename(p,nEl);}};
+      nEl.appendChild(label);
+
+      var tag=document.createElement('span');
+      if(hp[p]!==undefined){
+        var v=hp[p];
+        tag.className='tag '+(v===0?'zero':(v===2*(n-1)?'win':'mid'));
+        tag.textContent=fmt(v)+' pt'+(v>1?'s':'');
+      }else{
+        tag.className='tag wait';tag.textContent='—';
+      }
+      nEl.appendChild(tag);
+
+      var t=document.createElement('div');t.className='t';
+      t.textContent=played(p)+' trous · '+fmt(tot(p))+' pts';
+      who.appendChild(nEl);who.appendChild(t);
+
+      var minus=document.createElement('button');minus.className='step';minus.textContent='−';
+      minus.setAttribute('aria-label','Un coup de moins pour '+p);
+      var num=document.createElement('div');num.className='num'+(s===null?' empty':'');
+      num.textContent=s===null?'·':s;
+      var plus=document.createElement('button');plus.className='step';plus.textContent='+';
+      plus.setAttribute('aria-label','Un coup de plus pour '+p);
+
+      minus.onclick=function(){var c=state.scores[p][h];
+        if(c===null)state.scores[p][h]=state.pars[h];
+        else if(c>1)state.scores[p][h]=c-1;
+        render();save();};
+      plus.onclick=function(){var c=state.scores[p][h];
+        state.scores[p][h]=(c===null)?state.pars[h]:Math.min(15,c+1);
+        render();save();};
+
+      row.appendChild(who);row.appendChild(minus);row.appendChild(num);row.appendChild(plus);
+      rowsEl.appendChild(row);
+    });
+
+    var rank=state.players.map(function(p){return{n:p,pt:tot(p),st:strokes(p)};})
+      .sort(function(a,b){return b.pt-a.pt||a.st-b.st;});
+    boardEl.innerHTML='';
+    rank.forEach(function(r,i){
+      var line=document.createElement('div');line.className='line'+(i===0&&r.pt>0?' lead':'');
+      var pos=document.createElement('div');pos.className='pos';pos.textContent=(i+1);
+      var nm=document.createElement('div');nm.className='lname';nm.textContent=r.n;
+      var st=document.createElement('div');st.className='lst';st.textContent=r.st+' coups';
+      var pt=document.createElement('div');pt.className='lpt';pt.textContent=fmt(r.pt)+' pts';
+      var del=document.createElement('button');del.className='del';del.textContent='✕';
+      del.setAttribute('aria-label','Retirer '+r.n);
+      del.onclick=function(){
+        if(state.players.length<=1)return;
+        state.players=state.players.filter(function(x){return x!==r.n;});
+        delete state.scores[r.n];render();save();};
+      line.appendChild(pos);line.appendChild(nm);line.appendChild(st);line.appendChild(pt);line.appendChild(del);
+      boardEl.appendChild(line);
+    });
+
+    var done=0;
+    for(var i=0;i<18;i++)if(holeComplete(i))done++;
+    document.getElementById('progress').textContent=done+' trous terminés sur 18';
+
+    var pot=n*(n-1);
+    var seq=[];
+    for(var k=0;k<n;k++)seq.push(2*(n-1-k));
+    document.getElementById('rules').textContent=
+      n<2?'Ajoute au moins deux joueurs pour compter les points.'
+      :'À '+n+' joueurs, '+pot+' points par trou : '+seq.join(' – ')+
+       '. Les ex æquo se partagent les places. Touche un nom pour le modifier.';
+  }
+
+  document.getElementById('prev').onclick=function(){if(state.hole>0){state.hole--;render();save();}};
+  document.getElementById('next').onclick=function(){if(state.hole<17){state.hole++;render();save();}};
+  document.getElementById('parUp').onclick=function(){if(state.pars[state.hole]<6){state.pars[state.hole]++;render();save();}};
+  document.getElementById('parDown').onclick=function(){if(state.pars[state.hole]>3){state.pars[state.hole]--;render();save();}};
+  document.getElementById('add').onclick=function(){
+    var f=document.getElementById('newName'),v=f.value.trim();
+    if(!v||state.players.indexOf(v)>-1){f.focus();return;}
+    state.players.push(v);state.scores[v]=new Array(18).fill(null);
+    f.value='';f.blur();render();save();};
+  document.getElementById('newName').addEventListener('keydown',function(e){
+    if(e.key==='Enter')document.getElementById('add').click();});
+  document.getElementById('reset').onclick=function(){
+    if(!confirm('Effacer tous les scores et repartir du trou 1 ?'))return;
+    state.players.forEach(function(p){state.scores[p]=new Array(18).fill(null);});
+    state.hole=0;render();save();flash('nouvelle partie');};
+
+  load().then(function(){render();});
+})();
+</script>
+</body>
+</html>
