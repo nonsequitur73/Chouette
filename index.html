@@ -3,110 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="color-scheme" content="light">
 <title>Chouette</title>
 <style>
   :root{
-    --pine:#12291F;
-    --fairway:#2A6B4F;
-    --sand:#E4D9BE;
-    --paper:#F6F2E7;
-    --flag:#B8412C;
-    --ink:#12291F;
-    --ink-soft:#5B6E63;
+    color-scheme: light;
+    --bg:#F2F2F7;
+    --surface:#FFFFFF;
+    --surface-2:#EFEFF4;
+    --separator:#E5E5EA;
+    --label:#000000;
+    --label-secondary:#6C6C70;
+    --label-tertiary:#AEAEB2;
+    --accent:#248A3D;
+    --accent-tint:#E6F4EA;
+    --destructive:#FF3B30;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
   body{
-    background:var(--paper);
-    color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    font-size:16px;
-    line-height:1.5;
-    padding-bottom:40px;
+    background:var(--bg);
+    color:var(--label);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.41176;
+    padding-bottom:48px;
+    -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:520px;margin:0 auto;padding:0 16px}
-  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-  input{font-family:inherit;font-size:16px}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;
+    -webkit-user-select:none;user-select:none}
+  input{font-family:inherit;font-size:17px}
 
-  header{background:var(--pine);color:var(--sand);padding:18px 0 22px}
-  .brand{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px}
-  .brand h1{margin:0;font-size:19px;font-weight:600;letter-spacing:-0.01em}
-  .brand span{font-size:12px;color:#8FA89A}
+  @media (prefers-reduced-motion: no-preference){
+    .tap{transition:opacity .1s ease, transform .1s ease}
+    .tap:active{opacity:.5}
+    .step:active,.navbtn:active{transform:scale(.92)}
+    .fade{animation:fadeIn .16s ease-out}
+  }
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-  .holebar{display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .arrow{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.09);
-    font-size:24px;line-height:1;display:flex;align-items:center;justify-content:center;color:var(--sand)}
-  .arrow:disabled{opacity:.25}
-  .arrow:active{background:rgba(255,255,255,.18)}
+  header{padding:24px 0 16px}
+  .brand{margin-bottom:16px;padding:0 4px}
+  .brand h1{margin:0;font-size:28px;font-weight:700;letter-spacing:0.013em;color:var(--label)}
+
+  .segwrap{background:var(--surface);border-radius:14px;border:1px solid rgba(36,138,61,.35);
+    padding:16px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+    box-shadow:0 1px 1px rgba(0,0,0,.04)}
+  .navbtn{width:44px;height:44px;border-radius:10px;font-size:20px;color:var(--accent);font-weight:600;
+    display:flex;align-items:center;justify-content:center}
+  .navbtn:disabled{opacity:.3;color:var(--label-tertiary)}
   .holeface{text-align:center;flex:1}
-  .holenum{font-size:44px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
-  .holesub{font-size:12px;color:#8FA89A;margin-top:2px}
-  .par{margin-top:10px;display:inline-flex;align-items:center;gap:2px;
-    background:rgba(255,255,255,.09);border-radius:999px;padding:3px}
-  .par button{width:32px;height:30px;border-radius:999px;color:var(--sand);font-size:17px}
-  .par b{font-size:13px;font-weight:500;padding:0 8px;font-variant-numeric:tabular-nums}
+  .holenum{font-size:36px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;color:var(--label)}
+  .holesub{font-size:13px;color:var(--label-secondary);margin-top:3px;font-weight:400}
+  .par{margin-top:12px;display:inline-flex;align-items:center;gap:0;
+    background:var(--surface-2);border-radius:8px;padding:2px}
+  .par button{width:30px;height:28px;border-radius:6px;color:var(--accent);font-size:16px;font-weight:600}
+  .par b{font-size:13px;font-weight:600;padding:0 8px;font-variant-numeric:tabular-nums;color:var(--label)}
 
-  .rows{margin-top:-14px}
-  .row{background:#fff;border-radius:14px;padding:10px 10px 10px 16px;margin-bottom:10px;
-    display:flex;align-items:center;gap:10px;box-shadow:0 1px 0 rgba(18,41,31,.10)}
+  .rows{margin-top:16px}
+  .row{background:var(--surface);border-radius:14px;border:1px solid rgba(36,138,61,.35);
+    padding:12px 8px 12px 16px;margin-bottom:8px;
+    display:flex;align-items:center;gap:8px;box-shadow:0 1px 1px rgba(0,0,0,.04)}
   .who{flex:1;min-width:0}
-  .who .n{font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .who .n span.name{border-bottom:1px dotted #C3CCC6;padding-bottom:1px}
-  .rename{width:100%;font-size:16px;font-weight:500;padding:6px 8px;border:1px solid var(--fairway);
-    border-radius:8px;background:#fff;color:var(--ink)}
+  .who .n{font-size:17px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--label)}
+  .who .n span.name{border-bottom:1px dotted var(--label-tertiary);padding-bottom:1px}
+  .rename{width:100%;font-size:17px;font-weight:600;padding:6px 8px;border:1.5px solid var(--accent);
+    border-radius:8px;background:var(--surface);color:var(--label)}
   .rename:focus{outline:none}
-  .who .t{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
-  .step{width:48px;height:48px;border-radius:12px;background:var(--sand);
-    font-size:22px;font-weight:500;display:flex;align-items:center;justify-content:center}
-  .step:active{background:#D3C5A2}
-  .num{width:44px;text-align:center;font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}
-  .num.empty{color:#C3CCC6;font-weight:400}
-  .tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;margin-left:6px;vertical-align:1px;
-    font-variant-numeric:tabular-nums}
-  .win{background:#D6E8DD;color:var(--fairway)}
-  .mid{background:#E9E4D5;color:#6B6244}
-  .zero{background:#EDEEEC;color:#9AA39E}
-  .wait{background:#EDEEEC;color:#9AA39E}
+  .who .t{font-size:13px;color:var(--label-secondary);margin-top:2px;font-variant-numeric:tabular-nums;font-weight:400}
+  .step{width:44px;height:44px;border-radius:10px;background:var(--surface-2);
+    font-size:21px;font-weight:600;display:flex;align-items:center;justify-content:center;color:var(--label)}
+  .num{width:40px;text-align:center;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--label)}
+  .num.empty{color:var(--label-tertiary);font-weight:400}
+  .tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:6px;margin-left:6px;vertical-align:1px;
+    font-variant-numeric:tabular-nums;font-weight:600}
+  .win{background:var(--accent-tint);color:var(--accent)}
+  .mid{background:var(--surface-2);color:var(--label-secondary)}
+  .zero{background:var(--surface-2);color:var(--label-tertiary)}
+  .wait{background:var(--surface-2);color:var(--label-tertiary)}
 
-  h2{font-size:13px;font-weight:600;color:var(--ink-soft);margin:26px 0 10px}
-  .board{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 0 rgba(18,41,31,.10)}
-  .line{display:flex;align-items:center;gap:10px;padding:12px 14px;border-top:1px solid #EFEBDF}
+  h2{font-size:13px;font-weight:600;color:var(--label-secondary);margin:24px 0 8px;letter-spacing:0;
+    text-transform:uppercase;padding:0 4px}
+  .board{background:var(--surface);border-radius:14px;overflow:hidden;border:1px solid rgba(36,138,61,.35);
+    box-shadow:0 1px 1px rgba(0,0,0,.04)}
+  .line{display:flex;align-items:center;gap:10px;padding:12px 16px;border-top:0.5px solid var(--separator)}
   .line:first-child{border-top:none}
-  .line.lead{background:#F4F8F5}
-  .pos{width:18px;font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
-  .lname{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px}
-  .lst{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
-  .lpt{font-size:17px;font-weight:600;min-width:52px;text-align:right;font-variant-numeric:tabular-nums}
-  .del{width:30px;height:30px;border-radius:50%;color:#B9C2BC;font-size:15px}
+  .line.lead{background:var(--accent-tint)}
+  .pos{width:16px;font-size:14px;color:var(--label-secondary);font-variant-numeric:tabular-nums;font-weight:500}
+  .lname{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px;font-weight:500;color:var(--label)}
+  .lst{font-size:14px;color:var(--label-secondary);font-variant-numeric:tabular-nums;font-weight:400}
+  .lpt{font-size:17px;font-weight:700;min-width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--label)}
+  .del{width:30px;height:30px;border-radius:50%;color:var(--label-tertiary);font-size:14px}
 
   .addrow{display:flex;gap:8px;margin-top:12px}
-  .addrow input{flex:1;padding:12px 14px;border:1px solid #DDD6C4;border-radius:12px;background:#fff}
-  .addrow input:focus{outline:2px solid var(--fairway);outline-offset:-1px}
-  .addrow button{background:var(--fairway);color:#fff;padding:0 18px;border-radius:12px;font-weight:500}
+  .addrow input{flex:1;padding:12px 16px;border:none;border-radius:12px;
+    background:var(--surface);color:var(--label);box-shadow:0 1px 1px rgba(0,0,0,.04)}
+  .addrow input::placeholder{color:var(--label-tertiary)}
+  .addrow input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+  .addrow button{background:var(--accent);color:#FFFFFF;padding:0 20px;border-radius:12px;font-weight:600;font-size:15px}
 
-  .foot{display:flex;justify-content:space-between;align-items:center;margin-top:20px;font-size:13px;color:var(--ink-soft)}
-  .foot button{text-decoration:underline;color:var(--ink-soft)}
-  .rules{margin-top:14px;font-size:12.5px;color:var(--ink-soft);line-height:1.7}
-  .saved{font-size:12px;color:var(--fairway)}
+  .foot{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding:0 4px;
+    font-size:15px;color:var(--label-secondary);font-weight:400}
+  .foot button{color:var(--accent);font-weight:600;padding:8px 4px;font-size:15px}
+  .foot button.confirming{color:var(--destructive)}
+  .rules{margin-top:16px;padding:0 4px;font-size:13px;color:var(--label-secondary);line-height:1.5}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(12px);
+    background:rgba(28,28,30,.92);color:#FFFFFF;
+    font-size:14px;font-weight:600;padding:11px 20px;border-radius:14px;
+    opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s cubic-bezier(.34,1.3,.64,1);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:1px}
 </style>
 </head>
 <body>
 
 <header>
   <div class="wrap">
-    <div class="brand"><h1>Chouette</h1><span id="saved" class="saved"></span></div>
-    <div class="holebar">
-      <button class="arrow" id="prev" aria-label="Trou précédent">‹</button>
+    <div class="brand"><h1>Chouette</h1></div>
+    <div class="segwrap">
+      <button class="navbtn tap" id="prev" aria-label="Trou précédent">‹</button>
       <div class="holeface">
         <div class="holenum" id="holenum">1</div>
         <div class="holesub" id="holesub">trou 1 sur 18</div>
         <div class="par">
-          <button id="parDown" aria-label="Baisser le par">−</button>
+          <button class="tap" id="parDown" aria-label="Baisser le par">−</button>
           <b>par <span id="parVal">4</span></b>
-          <button id="parUp" aria-label="Monter le par">+</button>
+          <button class="tap" id="parUp" aria-label="Monter le par">+</button>
         </div>
       </div>
-      <button class="arrow" id="next" aria-label="Trou suivant">›</button>
+      <button class="navbtn tap" id="next" aria-label="Trou suivant">›</button>
     </div>
   </div>
 </header>
@@ -130,23 +158,31 @@
   <div class="rules" id="rules"></div>
 </div>
 
+<div class="toast" id="toast"><span class="dot"></span><span id="toastText">Enregistré</span></div>
+
 <script>
 (function(){
-  var KEY='chouette-golf-v2';
-  var state={players:['Joueur 1','Joueur 2','Joueur 3'],pars:null,scores:{},hole:0};
-  state.pars=[4,5,3,4,4,3,5,4,4,4,3,5,4,4,3,4,5,4];
+  var KEY='chouette-golf-v5';
+  var defaultPars=[5,5,3,4,4,4,4,3,4,5,3,4,4,3,4,3,5,5];
+  var state={players:['Joueur 1','Joueur 2','Joueur 3'],pars:defaultPars.slice(),scores:{},hole:0};
   state.players.forEach(function(p){state.scores[p]=new Array(18).fill(null);});
 
   var saveTimer=null;
-  function flash(msg){var el=document.getElementById('saved');el.textContent=msg;
-    clearTimeout(flash.t);flash.t=setTimeout(function(){el.textContent='';},1600);}
+  var toastTimer=null;
+  function flash(msg){
+    var el=document.getElementById('toast');
+    document.getElementById('toastText').textContent=msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(function(){el.classList.remove('show');},1500);
+  }
 
   function save(){
     clearTimeout(saveTimer);
     saveTimer=setTimeout(function(){
       try{
         localStorage.setItem(KEY,JSON.stringify(state));
-        flash('enregistré');
+        flash('Enregistré');
       }catch(e){}
     },400);
   }
@@ -245,6 +281,10 @@
     var hp=holePoints(h);
 
     rowsEl.innerHTML='';
+    rowsEl.classList.remove('fade');
+    void rowsEl.offsetWidth;
+    rowsEl.classList.add('fade');
+
     state.players.forEach(function(p){
       var s=state.scores[p][h];
       var row=document.createElement('div');row.className='row';
@@ -272,11 +312,11 @@
       t.textContent=played(p)+' trous · '+fmt(tot(p))+' pts';
       who.appendChild(nEl);who.appendChild(t);
 
-      var minus=document.createElement('button');minus.className='step';minus.textContent='−';
+      var minus=document.createElement('button');minus.className='step tap';minus.textContent='−';
       minus.setAttribute('aria-label','Un coup de moins pour '+p);
       var num=document.createElement('div');num.className='num'+(s===null?' empty':'');
       num.textContent=s===null?'·':s;
-      var plus=document.createElement('button');plus.className='step';plus.textContent='+';
+      var plus=document.createElement('button');plus.className='step tap';plus.textContent='+';
       plus.setAttribute('aria-label','Un coup de plus pour '+p);
 
       minus.onclick=function(){var c=state.scores[p][h];
@@ -300,7 +340,7 @@
       var nm=document.createElement('div');nm.className='lname';nm.textContent=r.n;
       var st=document.createElement('div');st.className='lst';st.textContent=r.st+' coups';
       var pt=document.createElement('div');pt.className='lpt';pt.textContent=fmt(r.pt)+' pts';
-      var del=document.createElement('button');del.className='del';del.textContent='✕';
+      var del=document.createElement('button');del.className='del tap';del.textContent='✕';
       del.setAttribute('aria-label','Retirer '+r.n);
       del.onclick=function(){
         if(state.players.length<=1)return;
@@ -334,10 +374,31 @@
     f.value='';f.blur();render();save();};
   document.getElementById('newName').addEventListener('keydown',function(e){
     if(e.key==='Enter')document.getElementById('add').click();});
-  document.getElementById('reset').onclick=function(){
-    if(!confirm('Effacer tous les scores et repartir du trou 1 ?'))return;
+
+  var resetBtn=document.getElementById('reset');
+  var resetArmed=false;
+  var resetArmTimer=null;
+  resetBtn.onclick=function(){
+    if(!resetArmed){
+      resetArmed=true;
+      resetBtn.textContent='Confirmer ?';
+      resetBtn.classList.add('confirming');
+      clearTimeout(resetArmTimer);
+      resetArmTimer=setTimeout(function(){
+        resetArmed=false;
+        resetBtn.textContent='Nouvelle partie';
+        resetBtn.classList.remove('confirming');
+      },2500);
+      return;
+    }
+    clearTimeout(resetArmTimer);
+    resetArmed=false;
+    resetBtn.textContent='Nouvelle partie';
+    resetBtn.classList.remove('confirming');
     state.players.forEach(function(p){state.scores[p]=new Array(18).fill(null);});
-    state.hole=0;render();save();flash('nouvelle partie');};
+    state.pars=defaultPars.slice();
+    state.hole=0;render();save();flash('Nouvelle partie');
+  };
 
   load().then(function(){render();});
 })();
