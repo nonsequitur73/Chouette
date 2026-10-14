@@ -2,8 +2,16 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F2F2F7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Chouette">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <title>Chouette</title>
 <style>
   :root{
@@ -27,13 +35,15 @@
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
     font-size:17px;
     line-height:1.41176;
-    padding-bottom:48px;
+    padding-bottom:calc(48px + env(safe-area-inset-bottom));
+    padding-top:env(safe-area-inset-top);
     -webkit-font-smoothing:antialiased;
+    touch-action:manipulation;
   }
   .wrap{max-width:520px;margin:0 auto;padding:0 16px}
   button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;
     -webkit-user-select:none;user-select:none}
-  input{font-family:inherit;font-size:17px}
+  input,select{font-family:inherit;font-size:17px}
 
   @media (prefers-reduced-motion: no-preference){
     .tap{transition:opacity .1s ease, transform .1s ease}
@@ -44,8 +54,16 @@
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
   header{padding:24px 0 16px}
-  .brand{margin-bottom:16px;padding:0 4px}
+  .brand{margin-bottom:12px;padding:0 4px}
   .brand h1{margin:0;font-size:28px;font-weight:700;letter-spacing:0.013em;color:var(--label)}
+
+  .course{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:0 4px;flex-wrap:wrap}
+  .course label{font-size:13px;font-weight:600;color:var(--label-secondary);text-transform:uppercase}
+  .course select{-webkit-appearance:none;appearance:none;background:var(--surface);color:var(--accent);
+    font-weight:600;font-size:16px;border:1px solid rgba(36,138,61,.35);border-radius:10px;padding:6px 28px 6px 12px;
+    background-image:linear-gradient(45deg,transparent 50%,var(--accent) 50%),linear-gradient(135deg,var(--accent) 50%,transparent 50%);
+    background-position:calc(100% - 15px) 52%,calc(100% - 10px) 52%;background-size:5px 5px;background-repeat:no-repeat}
+  .savecourse{color:var(--accent);font-weight:600;font-size:15px;padding:6px 4px}
 
   .segwrap{background:var(--surface);border-radius:14px;border:1px solid rgba(36,138,61,.35);
     padding:16px;display:flex;align-items:center;justify-content:space-between;gap:8px;
@@ -74,7 +92,7 @@
   .who .t{font-size:13px;color:var(--label-secondary);margin-top:2px;font-variant-numeric:tabular-nums;font-weight:400}
   .step{width:44px;height:44px;border-radius:10px;background:var(--surface-2);
     font-size:21px;font-weight:600;display:flex;align-items:center;justify-content:center;color:var(--label)}
-  .num{width:40px;text-align:center;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--label)}
+  .num{width:40px;height:44px;text-align:center;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--label)}
   .num.empty{color:var(--label-tertiary);font-weight:400}
   .tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:6px;margin-left:6px;vertical-align:1px;
     font-variant-numeric:tabular-nums;font-weight:600}
@@ -90,14 +108,17 @@
   .line{display:flex;align-items:center;gap:10px;padding:12px 16px;border-top:0.5px solid var(--separator)}
   .line:first-child{border-top:none}
   .line.lead{background:var(--accent-tint)}
+  .line.gone{opacity:.5}
   .pos{width:16px;font-size:14px;color:var(--label-secondary);font-variant-numeric:tabular-nums;font-weight:500}
   .lname{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px;font-weight:500;color:var(--label)}
   .lst{font-size:14px;color:var(--label-secondary);font-variant-numeric:tabular-nums;font-weight:400}
   .lpt{font-size:17px;font-weight:700;min-width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--label)}
-  .del{width:30px;height:30px;border-radius:50%;color:var(--label-tertiary);font-size:14px}
+  .del{width:30px;height:30px;border-radius:15px;color:var(--label-tertiary);font-size:14px;flex:none}
+  .del.confirming{width:auto;padding:0 10px;background:var(--destructive);color:#FFFFFF;font-size:13px;font-weight:600}
+  .delspace{width:30px;flex:none}
 
   .addrow{display:flex;gap:8px;margin-top:12px}
-  .addrow input{flex:1;padding:12px 16px;border:none;border-radius:12px;
+  .addrow input{flex:1;min-width:0;padding:12px 16px;border:none;border-radius:12px;
     background:var(--surface);color:var(--label);box-shadow:0 1px 1px rgba(0,0,0,.04)}
   .addrow input::placeholder{color:var(--label-tertiary)}
   .addrow input:focus{outline:2px solid var(--accent);outline-offset:-1px}
@@ -109,8 +130,8 @@
   .foot button.confirming{color:var(--destructive)}
   .rules{margin-top:16px;padding:0 4px;font-size:13px;color:var(--label-secondary);line-height:1.5}
 
-  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(12px);
-    background:rgba(28,28,30,.92);color:#FFFFFF;
+  .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(12px);
+    background:rgba(28,28,30,.92);color:#FFFFFF;max-width:calc(100% - 32px);text-align:center;
     font-size:14px;font-weight:600;padding:11px 20px;border-radius:14px;
     opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s cubic-bezier(.34,1.3,.64,1);
     backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
@@ -123,6 +144,11 @@
 <header>
   <div class="wrap">
     <div class="brand"><h1>Chouette</h1></div>
+    <div class="course">
+      <label for="courseSel">Parcours</label>
+      <select id="courseSel"></select>
+      <button class="savecourse tap" id="saveCourse" hidden>Enregistrer les pars</button>
+    </div>
     <div class="segwrap">
       <button class="navbtn tap" id="prev" aria-label="Trou précédent">‹</button>
       <div class="holeface">
@@ -146,7 +172,7 @@
   <div class="board" id="board"></div>
 
   <div class="addrow">
-    <input id="newName" type="text" placeholder="Ajouter un joueur" autocomplete="off">
+    <input id="newName" type="text" placeholder="Ajouter un joueur" autocomplete="off" maxlength="24">
     <button id="add">Ajouter</button>
   </div>
 
@@ -158,61 +184,127 @@
   <div class="rules" id="rules"></div>
 </div>
 
-<div class="toast" id="toast"><span class="dot"></span><span id="toastText">Enregistré</span></div>
+<div class="toast" id="toast" role="status" aria-live="polite"><span class="dot"></span><span id="toastText"></span></div>
 
 <script>
 (function(){
-  var KEY='chouette-golf-v5';
-  var defaultPars=[5,5,3,4,4,4,4,3,4,5,3,4,4,3,4,3,5,5];
-  var state={players:['Joueur 1','Joueur 2','Joueur 3'],pars:defaultPars.slice(),scores:{},hole:0};
-  state.players.forEach(function(p){state.scores[p]=new Array(18).fill(null);});
+  var KEY='chouette-golf-v6';
+  var OLD_KEY='chouette-golf-v5';
+  var COURSES_KEY='chouette-courses';
+  var CHAMOIS={id:'chamois',name:'Chamois',pars:[5,5,3,4,4,4,4,3,4,5,3,4,4,3,4,3,5,5]};
 
-  var saveTimer=null;
+  var state=null;
+  var courses=[];
+  var armedDel=null,armedDelTimer=null;
+
+  // ---------- helpers ----------
+  function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+  function blank(){return new Array(18).fill(null);}
+  function samePars(a,b){for(var i=0;i<18;i++)if(a[i]!==b[i])return false;return true;}
+  function fmt(v){return Number.isInteger(v)?String(v):v.toFixed(1);}
+  function norm(s){return s.trim().toLowerCase();}
+
   var toastTimer=null;
   function flash(msg){
     var el=document.getElementById('toast');
     document.getElementById('toastText').textContent=msg;
     el.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer=setTimeout(function(){el.classList.remove('show');},1500);
+    toastTimer=setTimeout(function(){el.classList.remove('show');},2000);
   }
 
-  function save(){
-    clearTimeout(saveTimer);
-    saveTimer=setTimeout(function(){
-      try{
-        localStorage.setItem(KEY,JSON.stringify(state));
-        flash('Enregistré');
-      }catch(e){}
-    },400);
+  // ---------- validation ----------
+  function validPars(p){return Array.isArray(p)&&p.length===18&&p.every(function(v){return Number.isInteger(v)&&v>=3&&v<=6;});}
+  function validScores(a){return Array.isArray(a)&&a.length===18&&a.every(function(v){return v===null||(Number.isInteger(v)&&v>=1&&v<=15);});}
+  function validHole(h){return Number.isInteger(h)&&h>=0&&h<=17;}
+  function validCourse(c){return c&&typeof c.id==='string'&&typeof c.name==='string'&&c.name.trim()&&validPars(c.pars);}
+  function validState(d){
+    if(!d||!Array.isArray(d.players)||!d.players.length||!d.scores||!validPars(d.pars)||!validHole(d.hole))return false;
+    return d.players.every(function(p){
+      return p&&typeof p.id==='string'&&typeof p.name==='string'&&validScores(d.scores[p.id]);
+    });
   }
 
-  function load(){
+  // ---------- courses ----------
+  function courseById(id){for(var i=0;i<courses.length;i++)if(courses[i].id===id)return courses[i];return null;}
+  function loadCourses(){
     try{
-      var raw=localStorage.getItem(KEY);
-      if(raw){
-        var d=JSON.parse(raw);
-        if(d&&d.players&&d.players.length){state=d;}
-      }
+      var c=JSON.parse(localStorage.getItem(COURSES_KEY)||'null');
+      if(Array.isArray(c))courses=c.filter(validCourse);
     }catch(e){}
-    return Promise.resolve();
+    if(!courseById(CHAMOIS.id))courses.unshift({id:CHAMOIS.id,name:CHAMOIS.name,pars:CHAMOIS.pars.slice()});
   }
+  function saveCourses(){
+    try{localStorage.setItem(COURSES_KEY,JSON.stringify(courses));}
+    catch(e){flash('Impossible d’enregistrer le parcours');}
+  }
+
+  // ---------- round state ----------
+  function freshState(){
+    var s={players:[],scores:{},courseId:CHAMOIS.id,pars:courseById(CHAMOIS.id).pars.slice(),hole:0};
+    ['Joueur 1','Joueur 2','Joueur 3'].forEach(function(n){
+      var id=uid();s.players.push({id:id,name:n,from:0,to:null});s.scores[id]=blank();
+    });
+    return s;
+  }
+  // Old version stored players by name. Convert so a round in progress is kept.
+  function migrateV5(d){
+    if(!d||!Array.isArray(d.players)||!d.players.length||!d.scores)return null;
+    var s={players:[],scores:{},courseId:CHAMOIS.id,
+      pars:validPars(d.pars)?d.pars.slice():CHAMOIS.pars.slice(),
+      hole:validHole(d.hole)?d.hole:0};
+    for(var i=0;i<d.players.length;i++){
+      var name=d.players[i];
+      if(typeof name!=='string'||!validScores(d.scores[name]))return null;
+      var id=uid();
+      s.players.push({id:id,name:name,from:0,to:null});
+      s.scores[id]=d.scores[name].slice();
+    }
+    return s;
+  }
+  function load(){
+    loadCourses();
+    var s=null;
+    try{var raw=localStorage.getItem(KEY);if(raw){var d=JSON.parse(raw);if(validState(d))s=d;}}catch(e){}
+    if(!s){try{var old=localStorage.getItem(OLD_KEY);if(old)s=migrateV5(JSON.parse(old));}catch(e){}}
+    state=s||freshState();
+    if(!courseById(state.courseId))state.courseId=CHAMOIS.id;
+    state.players.forEach(function(p){
+      if(!validHole(p.from))p.from=0;
+      if(!(p.to===null||(Number.isInteger(p.to)&&p.to>p.from&&p.to<=18)))p.to=null;
+    });
+    if(!state.players.some(active))state.players[0].to=null;
+  }
+
+  var saveTimer=null;
+  function writeNow(){
+    clearTimeout(saveTimer);saveTimer=null;
+    try{localStorage.setItem(KEY,JSON.stringify(state));}
+    catch(e){flash('Impossible d’enregistrer');}
+  }
+  function save(){clearTimeout(saveTimer);saveTimer=setTimeout(writeNow,300);}
+  document.addEventListener('visibilitychange',function(){if(document.hidden&&saveTimer)writeNow();});
+  window.addEventListener('pagehide',function(){if(saveTimer)writeNow();});
+
+  // ---------- scoring ----------
+  // A player counts on a hole only between the hole they joined and the hole they left.
+  function active(p){return p.to===null;}
+  function inHole(p,i){return i>=p.from&&(p.to===null||i<p.to);}
+  function partOf(i){return state.players.filter(function(p){return inHole(p,i);});}
+  function findPlayer(id){for(var i=0;i<state.players.length;i++)if(state.players[i].id===id)return state.players[i];return null;}
 
   function holeComplete(i){
-    if(state.players.length<2)return false;
-    for(var k=0;k<state.players.length;k++){
-      if(state.scores[state.players[k]][i]===null)return false;
-    }
-    return true;
+    var ps=partOf(i);
+    if(ps.length<2)return false;
+    return ps.every(function(p){return state.scores[p.id][i]!==null;});
   }
-
   function holePoints(i){
     var out={};
-    var n=state.players.length;
     if(!holeComplete(i))return out;
+    var ps=partOf(i),n=ps.length;
     var slots=[];
     for(var k=0;k<n;k++)slots.push(2*(n-1-k));
-    var list=state.players.map(function(p){return{p:p,s:state.scores[p][i]};})
+    var list=ps.map(function(p){return{id:p.id,s:state.scores[p.id][i]};})
       .sort(function(a,b){return a.s-b.s;});
     var idx=0;
     while(idx<n){
@@ -221,45 +313,36 @@
       var sum=0;
       for(var q=idx;q<=j;q++)sum+=slots[q];
       var share=sum/(j-idx+1);
-      for(var q2=idx;q2<=j;q2++)out[list[q2].p]=share;
+      for(var q2=idx;q2<=j;q2++)out[list[q2].id]=share;
       idx=j+1;
     }
     return out;
   }
-
-  function tot(p){
-    var t=0;
-    for(var i=0;i<18;i++){
-      var hp=holePoints(i);
-      if(hp[p]!==undefined)t+=hp[p];
-    }
-    return t;
+  function strokes(id){var t=0;state.scores[id].forEach(function(s){if(s!==null)t+=s;});return t;}
+  function played(id){return state.scores[id].filter(function(s){return s!==null;}).length;}
+  function firstOpenHole(){for(var i=0;i<18;i++)if(!holeComplete(i))return i;return 17;}
+  function nameTaken(name,exceptId){
+    var n=norm(name);
+    return state.players.some(function(p){return p.id!==exceptId&&norm(p.name)===n;});
   }
-  function strokes(p){var t=0;for(var i=0;i<18;i++){var s=state.scores[p][i];if(s!==null)t+=s;}return t;}
-  function played(p){var c=0;for(var i=0;i<18;i++)if(state.scores[p][i]!==null)c++;return c;}
-  function fmt(v){return Number.isInteger(v)?String(v):v.toFixed(1);}
 
-  var rowsEl=document.getElementById('rows'),boardEl=document.getElementById('board');
-
-  function renamePlayer(oldName,newName){
+  // ---------- actions ----------
+  function renamePlayer(id,newName){
+    var p=findPlayer(id);
     newName=newName.trim();
-    if(!newName||newName===oldName)return;
-    if(state.players.indexOf(newName)>-1)return;
-    var i=state.players.indexOf(oldName);
-    if(i<0)return;
-    state.players[i]=newName;
-    state.scores[newName]=state.scores[oldName];
-    delete state.scores[oldName];
+    if(!p||!newName||newName===p.name)return;
+    if(nameTaken(newName,id)){flash('Ce nom existe déjà');return;}
+    p.name=newName;
   }
 
   function startRename(p,container){
     var input=document.createElement('input');
-    input.type='text';input.className='rename';input.value=p;
+    input.type='text';input.className='rename';input.value=p.name;input.maxLength=24;
     input.setAttribute('aria-label','Nom du joueur');
     var done=false;
     function commit(){
       if(done)return;done=true;
-      renamePlayer(p,input.value);render();save();
+      renamePlayer(p.id,input.value);render();save();
     }
     input.onblur=commit;
     input.onkeydown=function(e){
@@ -270,38 +353,83 @@
     input.focus();input.select();
   }
 
+  // Removing keeps the points already earned. Holes after the player's last score no longer count them.
+  function removePlayer(id){
+    var p=findPlayer(id);if(!p)return;
+    if(state.players.filter(active).length<=1){flash('Il faut au moins un joueur');return;}
+    var sc=state.scores[id],last=-1;
+    for(var i=0;i<18;i++)if(sc[i]!==null)last=i;
+    if(last<0){
+      state.players=state.players.filter(function(x){return x.id!==id;});
+      delete state.scores[id];
+    }else{
+      p.to=Math.max(last+1,p.from+1);
+      for(var k=p.to;k<18;k++)sc[k]=null;
+      flash(p.name+' quitte la partie. Ses points restent.');
+    }
+  }
+
+  function armDelete(id){
+    armedDel=id;
+    clearTimeout(armedDelTimer);
+    armedDelTimer=setTimeout(function(){armedDel=null;render();},2500);
+  }
+
+  // ---------- render ----------
+  var rowsEl=document.getElementById('rows'),boardEl=document.getElementById('board');
+  var courseSel=document.getElementById('courseSel'),saveCourseBtn=document.getElementById('saveCourse');
+
+  function renderCourses(){
+    courseSel.innerHTML='';
+    courses.forEach(function(c){
+      var o=document.createElement('option');o.value=c.id;o.textContent=c.name;
+      if(c.id===state.courseId)o.selected=true;
+      courseSel.appendChild(o);
+    });
+    var o2=document.createElement('option');o2.value='__new';o2.textContent='Nouveau parcours…';
+    courseSel.appendChild(o2);
+    var c=courseById(state.courseId);
+    saveCourseBtn.hidden=!c||samePars(c.pars,state.pars);
+  }
+
   function render(){
-    var h=state.hole,n=state.players.length;
+    var h=state.hole;
+    renderCourses();
     document.getElementById('holenum').textContent=h+1;
     document.getElementById('holesub').textContent='trou '+(h+1)+' sur 18';
     document.getElementById('parVal').textContent=state.pars[h];
     document.getElementById('prev').disabled=(h===0);
     document.getElementById('next').disabled=(h===17);
 
-    var hp=holePoints(h);
+    var all=[];for(var i=0;i<18;i++)all.push(holePoints(i));
+    var tot={};
+    state.players.forEach(function(p){
+      var t=0;all.forEach(function(hp){if(hp[p.id]!==undefined)t+=hp[p.id];});tot[p.id]=t;
+    });
+    var hp=all[h],nHole=partOf(h).length;
 
     rowsEl.innerHTML='';
     rowsEl.classList.remove('fade');
     void rowsEl.offsetWidth;
     rowsEl.classList.add('fade');
 
-    state.players.forEach(function(p){
-      var s=state.scores[p][h];
+    partOf(h).forEach(function(p){
+      var s=state.scores[p.id][h];
       var row=document.createElement('div');row.className='row';
 
       var who=document.createElement('div');who.className='who';
       var nEl=document.createElement('div');nEl.className='n';
-      var label=document.createElement('span');label.className='name';label.textContent=p;
+      var label=document.createElement('span');label.className='name';label.textContent=p.name;
       label.setAttribute('role','button');label.setAttribute('tabindex','0');
-      label.setAttribute('aria-label','Renommer '+p);
+      label.setAttribute('aria-label','Renommer '+p.name);
       label.onclick=function(){startRename(p,nEl);};
       label.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();startRename(p,nEl);}};
       nEl.appendChild(label);
 
       var tag=document.createElement('span');
-      if(hp[p]!==undefined){
-        var v=hp[p];
-        tag.className='tag '+(v===0?'zero':(v===2*(n-1)?'win':'mid'));
+      if(hp[p.id]!==undefined){
+        var v=hp[p.id];
+        tag.className='tag '+(v===0?'zero':(v===2*(nHole-1)?'win':'mid'));
         tag.textContent=fmt(v)+' pt'+(v>1?'s':'');
       }else{
         tag.className='tag wait';tag.textContent='—';
@@ -309,98 +437,143 @@
       nEl.appendChild(tag);
 
       var t=document.createElement('div');t.className='t';
-      t.textContent=played(p)+' trous · '+fmt(tot(p))+' pts';
+      t.textContent=played(p.id)+' trous · '+fmt(tot[p.id])+' pts';
       who.appendChild(nEl);who.appendChild(t);
 
       var minus=document.createElement('button');minus.className='step tap';minus.textContent='−';
-      minus.setAttribute('aria-label','Un coup de moins pour '+p);
-      var num=document.createElement('div');num.className='num'+(s===null?' empty':'');
+      minus.setAttribute('aria-label','Un coup de moins pour '+p.name);
+      var num=document.createElement('button');num.className='num tap'+(s===null?' empty':'');
       num.textContent=s===null?'·':s;
+      num.setAttribute('aria-label',s===null?'Pas de score':'Effacer le score de '+p.name);
       var plus=document.createElement('button');plus.className='step tap';plus.textContent='+';
-      plus.setAttribute('aria-label','Un coup de plus pour '+p);
+      plus.setAttribute('aria-label','Un coup de plus pour '+p.name);
 
-      minus.onclick=function(){var c=state.scores[p][h];
-        if(c===null)state.scores[p][h]=state.pars[h];
-        else if(c>1)state.scores[p][h]=c-1;
+      minus.onclick=function(){var c=state.scores[p.id][h];
+        if(c===null)state.scores[p.id][h]=state.pars[h];
+        else if(c>1)state.scores[p.id][h]=c-1;
         render();save();};
-      plus.onclick=function(){var c=state.scores[p][h];
-        state.scores[p][h]=(c===null)?state.pars[h]:Math.min(15,c+1);
+      plus.onclick=function(){var c=state.scores[p.id][h];
+        state.scores[p.id][h]=(c===null)?state.pars[h]:Math.min(15,c+1);
         render();save();};
+      num.onclick=function(){
+        if(state.scores[p.id][h]===null)return;
+        state.scores[p.id][h]=null;render();save();flash('Score effacé');};
 
       row.appendChild(who);row.appendChild(minus);row.appendChild(num);row.appendChild(plus);
       rowsEl.appendChild(row);
     });
 
-    var rank=state.players.map(function(p){return{n:p,pt:tot(p),st:strokes(p)};})
+    var rank=state.players.map(function(p){return{p:p,pt:tot[p.id],st:strokes(p.id)};})
       .sort(function(a,b){return b.pt-a.pt||a.st-b.st;});
     boardEl.innerHTML='';
-    rank.forEach(function(r,i){
-      var line=document.createElement('div');line.className='line'+(i===0&&r.pt>0?' lead':'');
-      var pos=document.createElement('div');pos.className='pos';pos.textContent=(i+1);
-      var nm=document.createElement('div');nm.className='lname';nm.textContent=r.n;
+    rank.forEach(function(r){
+      var place=1;
+      rank.forEach(function(o){if(o.pt>r.pt||(o.pt===r.pt&&o.st<r.st))place++;});
+      var gone=!active(r.p);
+      var line=document.createElement('div');
+      line.className='line'+(place===1&&r.pt>0?' lead':'')+(gone?' gone':'');
+      var pos=document.createElement('div');pos.className='pos';pos.textContent=place;
+      var nm=document.createElement('div');nm.className='lname';nm.textContent=r.p.name+(gone?' (parti)':'');
       var st=document.createElement('div');st.className='lst';st.textContent=r.st+' coups';
       var pt=document.createElement('div');pt.className='lpt';pt.textContent=fmt(r.pt)+' pts';
-      var del=document.createElement('button');del.className='del tap';del.textContent='✕';
-      del.setAttribute('aria-label','Retirer '+r.n);
-      del.onclick=function(){
-        if(state.players.length<=1)return;
-        state.players=state.players.filter(function(x){return x!==r.n;});
-        delete state.scores[r.n];render();save();};
-      line.appendChild(pos);line.appendChild(nm);line.appendChild(st);line.appendChild(pt);line.appendChild(del);
+      line.appendChild(pos);line.appendChild(nm);line.appendChild(st);line.appendChild(pt);
+      if(gone){
+        var sp=document.createElement('div');sp.className='delspace';line.appendChild(sp);
+      }else{
+        var del=document.createElement('button');
+        var armed=armedDel===r.p.id;
+        del.className='del tap'+(armed?' confirming':'');
+        del.textContent=armed?'Retirer ?':'✕';
+        del.setAttribute('aria-label',armed?'Confirmer le retrait de '+r.p.name:'Retirer '+r.p.name);
+        del.onclick=function(){
+          if(armedDel!==r.p.id){armDelete(r.p.id);render();return;}
+          clearTimeout(armedDelTimer);armedDel=null;
+          removePlayer(r.p.id);render();save();
+        };
+        line.appendChild(del);
+      }
       boardEl.appendChild(line);
     });
 
     var done=0;
-    for(var i=0;i<18;i++)if(holeComplete(i))done++;
+    for(var j=0;j<18;j++)if(holeComplete(j))done++;
     document.getElementById('progress').textContent=done+' trous terminés sur 18';
 
-    var pot=n*(n-1);
+    var n=state.players.filter(active).length;
     var seq=[];
     for(var k=0;k<n;k++)seq.push(2*(n-1-k));
     document.getElementById('rules').textContent=
       n<2?'Ajoute au moins deux joueurs pour compter les points.'
-      :'À '+n+' joueurs, '+pot+' points par trou : '+seq.join(' – ')+
-       '. Les ex æquo se partagent les places. Touche un nom pour le modifier.';
+      :'À '+n+' joueurs, '+(n*(n-1))+' points par trou : '+seq.join(' – ')+
+       '. Les ex æquo se partagent les places. Touche un nom pour le modifier. Touche un score pour l’effacer.';
   }
 
+  // ---------- events ----------
   document.getElementById('prev').onclick=function(){if(state.hole>0){state.hole--;render();save();}};
   document.getElementById('next').onclick=function(){if(state.hole<17){state.hole++;render();save();}};
   document.getElementById('parUp').onclick=function(){if(state.pars[state.hole]<6){state.pars[state.hole]++;render();save();}};
   document.getElementById('parDown').onclick=function(){if(state.pars[state.hole]>3){state.pars[state.hole]--;render();save();}};
+
+  courseSel.onchange=function(){
+    var v=courseSel.value;
+    if(v==='__new'){
+      var name=(window.prompt('Nom du nouveau parcours')||'').trim();
+      if(!name){render();return;}
+      if(courses.some(function(c){return norm(c.name)===norm(name);})){flash('Ce parcours existe déjà');render();return;}
+      var c={id:uid(),name:name,pars:state.pars.slice()};
+      courses.push(c);saveCourses();
+      state.courseId=c.id;render();save();
+      flash('Parcours créé. Règle les pars puis enregistre.');
+      return;
+    }
+    var course=courseById(v);if(!course)return;
+    state.courseId=course.id;state.pars=course.pars.slice();
+    render();save();
+  };
+  saveCourseBtn.onclick=function(){
+    var c=courseById(state.courseId);if(!c)return;
+    c.pars=state.pars.slice();saveCourses();render();
+    flash('Pars enregistrés pour '+c.name);
+  };
+
   document.getElementById('add').onclick=function(){
     var f=document.getElementById('newName'),v=f.value.trim();
-    if(!v||state.players.indexOf(v)>-1){f.focus();return;}
-    state.players.push(v);state.scores[v]=new Array(18).fill(null);
-    f.value='';f.blur();render();save();};
+    if(!v){f.focus();return;}
+    if(nameTaken(v)){flash('Ce nom existe déjà');f.focus();return;}
+    var from=firstOpenHole();
+    var id=uid();
+    state.players.push({id:id,name:v,from:from,to:null});
+    state.scores[id]=blank();
+    f.value='';f.blur();render();save();
+    if(from>0)flash(v+' compte à partir du trou '+(from+1));
+  };
   document.getElementById('newName').addEventListener('keydown',function(e){
     if(e.key==='Enter')document.getElementById('add').click();});
 
   var resetBtn=document.getElementById('reset');
-  var resetArmed=false;
-  var resetArmTimer=null;
+  var resetArmed=false,resetArmTimer=null;
+  function disarmReset(){
+    resetArmed=false;resetBtn.textContent='Nouvelle partie';resetBtn.classList.remove('confirming');
+  }
   resetBtn.onclick=function(){
     if(!resetArmed){
-      resetArmed=true;
-      resetBtn.textContent='Confirmer ?';
-      resetBtn.classList.add('confirming');
-      clearTimeout(resetArmTimer);
-      resetArmTimer=setTimeout(function(){
-        resetArmed=false;
-        resetBtn.textContent='Nouvelle partie';
-        resetBtn.classList.remove('confirming');
-      },2500);
+      resetArmed=true;resetBtn.textContent='Confirmer ?';resetBtn.classList.add('confirming');
+      clearTimeout(resetArmTimer);resetArmTimer=setTimeout(disarmReset,2500);
       return;
     }
-    clearTimeout(resetArmTimer);
-    resetArmed=false;
-    resetBtn.textContent='Nouvelle partie';
-    resetBtn.classList.remove('confirming');
-    state.players.forEach(function(p){state.scores[p]=new Array(18).fill(null);});
-    state.pars=defaultPars.slice();
-    state.hole=0;render();save();flash('Nouvelle partie');
+    clearTimeout(resetArmTimer);disarmReset();
+    var keep=state.players.filter(active);
+    state.players=keep;state.scores={};
+    keep.forEach(function(p){p.from=0;p.to=null;state.scores[p.id]=blank();});
+    state.pars=courseById(state.courseId).pars.slice();
+    state.hole=0;render();writeNow();flash('Nouvelle partie');
   };
 
-  load().then(function(){render();});
+  load();render();writeNow();
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
+  }
 })();
 </script>
 </body>
